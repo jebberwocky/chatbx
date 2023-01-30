@@ -37,7 +37,7 @@ class ActionProvider {
   }
   handleHello = () => {
     console.log()
-    const botMessage = createChatBotMessage('I\'m empty mind');
+    const botMessage = createChatBotMessage('I\'m waiting for my API');
     this.setState((prev) => ({
       ...prev,
       messages: [...prev.messages, botMessage],
@@ -48,7 +48,7 @@ class ActionProvider {
 // Config starter code
 
 const config = {
-  initialMessages: [createChatBotMessage(`I'm empty mind`)]
+  initialMessages: [createChatBotMessage(`Hello, try input something`)]
 }
 
 function App() {
