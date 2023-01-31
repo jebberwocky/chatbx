@@ -1,9 +1,15 @@
 import logo from './logo.svg';
 import React from "react";
+import axios from 'axios';
 import Chatbot from "react-chatbot-kit";
 import { createChatBotMessage } from "react-chatbot-kit";
 import 'react-chatbot-kit/build/main.css';
 import './App.css';
+
+
+const client = axios.create({
+  baseURL: "http://localhost:3301" 
+});
 
 
 // MessageParser starter code
@@ -14,7 +20,7 @@ class MessageParser {
   }
 
   parse(message) {
-    this.actionProvider.handleHello();
+    this.actionProvider.handleHello(message);
     
     console.log(message)
   }
@@ -35,13 +41,24 @@ class ActionProvider {
     this.stateRef = stateRef;
     this.createCustomMessage = createCustomMessage;
   }
-  handleHello = () => {
-    console.log()
-    const botMessage = createChatBotMessage('I\'m waiting for my API');
-    this.setState((prev) => ({
-      ...prev,
-      messages: [...prev.messages, botMessage],
-    }));
+  handleHello = (message) => {
+    var botMessage = "";
+    client
+         .post('/chat', {
+            "input":message
+         })
+         .then((response) => {
+          console.log(response)
+          if(response.status&&response.status==200){
+            botMessage = botMessage = createChatBotMessage(response.data.chatbotResponse);
+          }
+          this.setState((prev) => ({
+            ...prev,
+            messages: [...prev.messages, botMessage],
+          }));
+         });
+    //botMessage = createChatBotMessage('I\'m waiting for my API');
+    
   };
 
 }
