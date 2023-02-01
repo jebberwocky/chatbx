@@ -6,9 +6,8 @@ import { createChatBotMessage } from "react-chatbot-kit";
 import 'react-chatbot-kit/build/main.css';
 import './App.css';
 
-
 const client = axios.create({
-  baseURL: "http://localhost:3301" 
+  baseURL:  process.env.REACT_APP_API_URL
 });
 
 
@@ -21,7 +20,6 @@ class MessageParser {
 
   parse(message) {
     this.actionProvider.handleHello(message);
-    
     console.log(message)
   }
 }
