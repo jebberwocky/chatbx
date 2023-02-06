@@ -63,8 +63,15 @@ class ActionProvider {
 // Config starter code
 
 const config = {
-  initialMessages: [createChatBotMessage(`Hello, try input something`)]
+  initialMessages: [createChatBotMessage("说出你的烦恼或随便说点儿什么. 10个字以内. 回答可能不完整, 全看心情")],
+  customComponents: {
+    // Replaces the default header
+    header: () => <div class="react-chatbot-kit-chat-header">说出你的烦恼或随便说点儿什么. 10个字以内. 回答可能不完整, 全看心情. 我不会说出去🙊</div>,
+    botAvatar: () => <div class="react-chatbot-kit-chat-bot-avatar"><div class="react-chatbot-kit-chat-bot-avatar-container"><p class="react-chatbot-kit-chat-bot-avatar-letter">🙊</p></div></div>
+  }
 }
+
+
 
 function App() {
   return (
