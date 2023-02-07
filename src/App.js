@@ -46,7 +46,6 @@ class ActionProvider {
             "input":message
          })
          .then((response) => {
-          console.log(response)
           if(response.status&&response.status==200){
             botMessage = botMessage = createChatBotMessage(response.data.chatbotResponse);
           }
