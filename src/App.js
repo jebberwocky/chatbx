@@ -62,10 +62,10 @@ class ActionProvider {
 // Config starter code
 
 const config = {
-  initialMessages: [createChatBotMessage("您请说(10个字以内)")],
+  initialMessages: [createChatBotMessage("您请说")],
   customComponents: {
     // Replaces the default header
-    header: () => <div class="react-chatbot-kit-chat-header">说出你的烦恼或随便说点儿什么(10个字以内). 回答可能不完整, 全看心情和钱包.</div>,
+    header: () => <div class="react-chatbot-kit-chat-header">说出你的烦恼或随便说点儿什么. 回答可能不完整, 全看心情和钱包.</div>,
     botAvatar: () => <div class="react-chatbot-kit-chat-bot-avatar"><div class="react-chatbot-kit-chat-bot-avatar-container"><p class="react-chatbot-kit-chat-bot-avatar-letter">🙊</p></div></div>
   }
 }
@@ -79,6 +79,7 @@ function App() {
         config={config}
         messageParser={MessageParser}
         actionProvider={ActionProvider}
+        placeholderText="在这里输入您的消息(10个字以内)"
       />
     </div>
   );
