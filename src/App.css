@@ -69,6 +69,22 @@
   width:100%;
 }
 
+.react-chatbot-kit-chat-inner-container{
+  height:95vh;
+}
+
+.react-chatbot-kit-chat-message-container{
+  display: block;
+  overflow: auto; 
+  height: 100%;
+  min-height:95vh;
+  max-height: 95vh;
+}
+
+.react-chatbot-kit-chat-input-container{
+  position:sticky;
+}
+
 .react-chatbot-kit-chat-bot-message{
   margin-left: inherit;
   width: inherit;
