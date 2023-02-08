@@ -89,3 +89,8 @@
   margin-left: inherit;
   width: inherit;
 }
+
+.rating-message{
+  color: #000000;
+  background-color: #ffffff;
+}

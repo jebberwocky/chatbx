@@ -12,6 +12,7 @@
     "react": "^18.2.0",
     "react-chatbot-kit": "^2.1.2",
     "react-dom": "^18.2.0",
+    "react-icons": "^4.7.1",
     "react-scripts": "5.0.1",
     "redux": "^4.2.1",
     "web-vitals": "^2.1.4"
@@ -21,7 +22,7 @@
     "build": "env-cmd -f .env.production react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "deploy":"scp -r ./build/* root@whereyogi.com:/mnt/volume_nyc1_01/web/chatbox/build/ "
+    "deploy": "scp -r ./build/* root@whereyogi.com:/mnt/volume_nyc1_01/web/chatbox/build/ "
   },
   "eslintConfig": {
     "extends": [

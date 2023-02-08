@@ -2,9 +2,15 @@ import logo from './logo.svg';
 import React from "react";
 import axios from 'axios';
 import Chatbot from "react-chatbot-kit";
-import { createChatBotMessage } from "react-chatbot-kit";
+import { createChatBotMessage,createCustomMessage } from "react-chatbot-kit";
+import RatingMessage from './CustomMessage/rating';
 import 'react-chatbot-kit/build/main.css';
 import './App.css';
+
+
+const chatconfig = {
+  "wordlimit":25
+}
 
 const client = axios.create({
   baseURL:  process.env.REACT_APP_API_URL
@@ -19,7 +25,7 @@ class MessageParser {
   }
 
   parse(message) {
-    this.actionProvider.handleHello(message);
+    this.actionProvider.handleMessage(message);
     console.log(message)
   }
 }
@@ -39,23 +45,36 @@ class ActionProvider {
     this.stateRef = stateRef;
     this.createCustomMessage = createCustomMessage;
   }
-  handleHello = (message) => {
+  handleMessage = (message) => {
     var botMessage = "";
+
     client
-         .post('/chat', {
-            "input":message
-         })
-         .then((response) => {
-          if(response.status&&response.status==200){
-            botMessage = botMessage = createChatBotMessage(response.data.chatbotResponse);
-          }
+      .post('/chat', {
+        "input":message
+      })
+      .then((response) => {
+        if(response.status&&response.status==200){
+          botMessage = botMessage = createChatBotMessage(response.data.chatbotResponse);
+        }
+        this.setState((prev) => ({
+          ...prev,
+          messages: [...prev.messages, botMessage,createCustomMessage('test','rating',{payload: {},}),],
+        }));
+      })
+      .catch((error)=> {
+        console.log(error)
+        var m = "🐒😴😴😴 等等试试";
+        if(error.code = "ERR_NETWORK"){
+          m = "网出错了😵";
+        }
+        if(m){
           this.setState((prev) => ({
             ...prev,
-            messages: [...prev.messages, botMessage],
+            messages: [...prev.messages, createChatBotMessage(m)],
+            //messages: [...prev.messages, createChatBotMessage(m),],
           }));
-         });
-    //botMessage = createChatBotMessage('I\'m waiting for my API');
-    
+        }
+      });
   };
 
 }
@@ -73,7 +92,11 @@ const config = {
     // Replaces the default header
     header: () => <div class="react-chatbot-kit-chat-header">说出你的烦恼或随便说点儿什么. 回答可能不完整, 全看心情和钱包.</div>,
     botAvatar: () => <div class="react-chatbot-kit-chat-bot-avatar"><div class="react-chatbot-kit-chat-bot-avatar-container"><p class="react-chatbot-kit-chat-bot-avatar-letter">🙊</p></div></div>
-  }
+  },
+  placeholderText:"在这里输入您的消息("+chatconfig.wordlimit+"个字以内)",
+  customMessages: {
+    rating: (props) => <RatingMessage {...props} />,
+  },
 }
 
 
@@ -85,7 +108,7 @@ function App() {
         config={config}
         messageParser={MessageParser}
         actionProvider={ActionProvider}
-        placeholderText="在这里输入您的消息(10个字以内)"
+        placeholderText={config.placeholderText}
       />
     </div>
   );
