@@ -6,6 +6,7 @@ import { createChatBotMessage,createCustomMessage } from "react-chatbot-kit";
 import RatingMessage from './CustomMessage/rating';
 import 'react-chatbot-kit/build/main.css';
 import './App.css';
+import { Mixpanel } from './Lib/Mixpanel';
 
 
 const chatconfig = {
@@ -47,7 +48,7 @@ class ActionProvider {
   }
   handleMessage = (message) => {
     var botMessage = "";
-
+    Mixpanel.track("input",{"data":message});
     client
       .post('/chat', {
         "input":message
@@ -58,8 +59,9 @@ class ActionProvider {
         }
         this.setState((prev) => ({
           ...prev,
-          messages: [...prev.messages, botMessage,createCustomMessage('test','rating',{payload: {},}),],
+          messages: [...prev.messages, botMessage,createCustomMessage('test','rating',{payload: {"input":message,"response":response.data.chatbotResponse},}),],
         }));
+        Mixpanel.track("response",{"data":response.data.chatbotResponse});
       })
       .catch((error)=> {
         console.log(error)
@@ -70,8 +72,8 @@ class ActionProvider {
         if(m){
           this.setState((prev) => ({
             ...prev,
-            messages: [...prev.messages, createChatBotMessage(m)],
-            //messages: [...prev.messages, createChatBotMessage(m),],
+            //messages: [...prev.messages, createChatBotMessage(m),createCustomMessage('test','rating',{payload:{"input":message,"response":m}},),],
+            messages: [...prev.messages, createChatBotMessage(m),],
           }));
         }
       });
