@@ -5,7 +5,6 @@ import { Mixpanel } from '../Lib/Mixpanel';
 
 const sendRating = (param,payload) =>{
   let r = Mixpanel.track("like",{"data":payload});
-  //console.log(r)
 }
 
 const RatingMessage = (props) => {

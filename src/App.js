@@ -7,10 +7,13 @@ import RatingMessage from './CustomMessage/rating';
 import 'react-chatbot-kit/build/main.css';
 import './App.css';
 import { Mixpanel } from './Lib/Mixpanel';
+import uuid from 'react-uuid';
+import { Base64 } from 'js-base64';
 
 
 const chatconfig = {
-  "wordlimit":25
+  "wordlimit":25,
+  "pk":uuid()
 }
 
 const client = axios.create({
@@ -27,7 +30,6 @@ class MessageParser {
 
   parse(message) {
     this.actionProvider.handleMessage(message);
-    console.log(message)
   }
 }
 
@@ -47,11 +49,15 @@ class ActionProvider {
     this.createCustomMessage = createCustomMessage;
   }
   handleMessage = (message) => {
-    var botMessage = "";
-    Mixpanel.track("input",{"data":message});
+    let botMessage = "";
+    const mk = uuid(),
+      mh = Base64.encode(message), 
+      atag={mk,mh,"pk":chatconfig.pk};
+    Mixpanel.track("input",{"data":message,atag});
     client
       .post('/chat', {
-        "input":message
+        "input":message,
+        atag
       })
       .then((response) => {
         if(response.status&&response.status==200){
@@ -59,12 +65,13 @@ class ActionProvider {
         }
         this.setState((prev) => ({
           ...prev,
-          messages: [...prev.messages, botMessage,createCustomMessage('test','rating',{payload: {"input":message,"response":response.data.chatbotResponse},}),],
+          messages: [...prev.messages, botMessage,
+            createCustomMessage('test','rating',{payload: {"input":message,"response":response.data.chatbotResponse,atag},}),],
         }));
-        Mixpanel.track("response",{"data":response.data.chatbotResponse});
+        Mixpanel.track("response",{"data":response.data.chatbotResponse,atag});
       })
       .catch((error)=> {
-        console.log(error)
+        //console.log(error)
         var m = "🐒😴😴😴 等等试试";
         if(error.code = "ERR_NETWORK"){
           m = "网出错了😵";
@@ -95,10 +102,17 @@ const config = {
     header: () => <div class="react-chatbot-kit-chat-header">说出你的烦恼或随便说点儿什么. 回答可能不完整, 全看心情和钱包.</div>,
     botAvatar: () => <div class="react-chatbot-kit-chat-bot-avatar"><div class="react-chatbot-kit-chat-bot-avatar-container"><p class="react-chatbot-kit-chat-bot-avatar-letter">🙊</p></div></div>
   },
-  placeholderText:"在这里输入您的消息("+chatconfig.wordlimit+"个字以内)",
+  placeholderText:"在这里输入您的消息("+chatconfig.wordlimit+"字以内)",
   customMessages: {
     rating: (props) => <RatingMessage {...props} />,
   },
+}
+
+const validateInput = function(input){
+  if(input&&input.length>1){
+    return true
+  }
+  return false;
 }
 
 
@@ -110,6 +124,7 @@ function App() {
         config={config}
         messageParser={MessageParser}
         actionProvider={ActionProvider}
+        validator={validateInput}
         placeholderText={config.placeholderText}
       />
     </div>
