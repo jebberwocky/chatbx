@@ -9,6 +9,7 @@ import './App.css';
 import { Mixpanel } from './Lib/Mixpanel';
 import uuid from 'react-uuid';
 import { Base64 } from 'js-base64';
+import {AnalyticLogger} from './Lib/AnalyticLogger';
 
 
 const chatconfig = {
@@ -61,6 +62,7 @@ class ActionProvider {
       })
       .then((response) => {
         if(response.status&&response.status==200){
+          console.log(response.data.chatbotResponse);
           botMessage = botMessage = createChatBotMessage(response.data.chatbotResponse);
         }
         this.setState((prev) => ({
@@ -69,11 +71,13 @@ class ActionProvider {
             createCustomMessage('test','rating',{payload: {"input":message,"response":response.data.chatbotResponse,atag},}),],
         }));
         Mixpanel.track("response",{"data":response.data.chatbotResponse,atag});
+        AnalyticLogger.log({"input":message,"response":response.data.chatbotResponse},atag);
       })
       .catch((error)=> {
         //console.log(error)
+        AnalyticLogger.log({"input":message,"response":"network error"},atag);
         var m = "🐒😴😴😴 等等试试";
-        if(error.code = "ERR_NETWORK"){
+        if(error.code == "ERR_NETWORK"){
           m = "网出错了😵";
         }
         if(m){

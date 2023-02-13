@@ -90,6 +90,10 @@
   width: inherit;
 }
 
+.react-chatbot-kit-chat-bot-message span img{
+  width:30vw
+}
+
 .rating-message{
   color: #000000;
   background-color: #ffffff;
