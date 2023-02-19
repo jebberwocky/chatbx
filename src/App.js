@@ -57,6 +57,10 @@ class ActionProvider {
       mh = Base64.encode(message), 
       atag={mk,mh,"pk":chatconfig.pk};
     Mixpanel.track("input",{"data":message,atag});
+
+    this.setState((prev) => ({
+      ...prev,
+      messages: [...prev.messages, createChatBotMessage("🐒收到, 请稍等"),]}));
     client
       .post('/chat', {
         "input":message,
@@ -65,7 +69,7 @@ class ActionProvider {
       .then((response) => {
         if(response.status&&response.status==200){
           console.log(response.data.chatbotResponse);
-          botMessage = botMessage = createChatBotMessage(response.data.chatbotResponse);
+          botMessage = createChatBotMessage(response.data.chatbotResponse);
         }
         this.setState((prev) => ({
           ...prev,
