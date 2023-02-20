@@ -4,6 +4,7 @@ import axios from 'axios';
 import Chatbot from "react-chatbot-kit";
 import { createChatBotMessage,createCustomMessage } from "react-chatbot-kit";
 import RatingMessage from './CustomMessage/rating';
+import HtmlMessage from './CustomMessage/html';
 import 'react-chatbot-kit/build/main.css';
 import './App.css';
 import { Mixpanel } from './Lib/Mixpanel';
@@ -23,6 +24,11 @@ const client = axios.create({
   baseURL:  process.env.REACT_APP_API_URL
 });
 
+
+function isHTMLMessage(m){
+  let r = /<[a-z/][\s\S]*>/i.test(m);
+  return r;
+}
 
 // MessageParser starter code
 class MessageParser {
@@ -68,8 +74,10 @@ class ActionProvider {
       })
       .then((response) => {
         if(response.status&&response.status==200){
-          console.log(response.data.chatbotResponse);
-          botMessage = createChatBotMessage(response.data.chatbotResponse);
+          if(!isHTMLMessage(response.data.chatbotResponse))
+            botMessage = createChatBotMessage(response.data.chatbotResponse);
+          else
+            botMessage = createCustomMessage(response.data.chatbotResponse,'chathtml',{payload:{"m":response.data.chatbotResponse,}})
         }
         this.setState((prev) => ({
           ...prev,
@@ -120,6 +128,7 @@ const config = {
   placeholderText:"在这里输入您的消息("+chatconfig.wordlimit+"字以内).",
   customMessages: {
     rating: (props) => <RatingMessage {...props} />,
+    chathtml:(props)=><HtmlMessage {...props} />,
   },
   widgets: [
     {

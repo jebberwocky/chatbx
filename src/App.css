@@ -94,6 +94,11 @@
   width:30vw
 }
 
+.react-chatbot-kit-chat-bot-message span a{
+  color:#ffffff;
+}
+
+
 .rating-message{
   color: #000000;
   background-color: #ffffff;
