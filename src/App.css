@@ -94,6 +94,11 @@
   width:30vw
 }
 
+.react-chatbot-kit-chat-bot-message img{
+  width:100%
+  border-radius: 1%;
+}
+
 .rating-message{
   color: #000000;
   background-color: #ffffff;
