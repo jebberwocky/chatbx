@@ -60,8 +60,9 @@ class ActionProvider {
   handleMessage = (message) => {
     let botMessage = "";
     const mk = uuid(),
-      mh = Base64.encode(message), 
-      atag={mk,mh,"pk":chatconfig.pk};
+    m = 'g3.5t',
+    mh = Base64.encode(message), 
+    atag={mk,mh,"pk":chatconfig.pk,m};
     Mixpanel.track("input",{"data":message,atag});
 
     this.setState((prev) => ({
