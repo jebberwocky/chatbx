@@ -17,8 +17,18 @@ import Welcome from './Component/welcome.jsx'
 
 const chatconfig = {
   "wordlimit":25,
-  "pk":uuid()
+  "m":'g3.5t',
+  "pk":uuid(),
+  "avatar":"🙊",
+  "api":'/chat'
 }
+
+if(Math.floor(Math.random() * 2)===0){
+  chatconfig.m = "td3";
+  chatconfig.avatar = "🙈";
+  chatconfig.api = "/chat/newmonkey";
+}
+
 
 const client = axios.create({
   baseURL:  process.env.REACT_APP_API_URL
@@ -60,16 +70,16 @@ class ActionProvider {
   handleMessage = (message) => {
     let botMessage = "";
     const mk = uuid(),
-    m = 'g3.5t',
+    
     mh = Base64.encode(message), 
-    atag={mk,mh,"pk":chatconfig.pk,m};
+    atag={mk,mh,"pk":chatconfig.pk,"m":chatconfig.m};
     Mixpanel.track("input",{"data":message,atag});
 
     this.setState((prev) => ({
       ...prev,
       messages: [...prev.messages, createChatBotMessage("🐒收到, 请稍等"),]}));
     client
-      .post('/chat', {
+      .post(chatconfig.api, {
         "input":message,
         atag
       })
@@ -91,6 +101,7 @@ class ActionProvider {
       .catch((error)=> {
         //console.log(error)
         AnalyticLogger.log({"input":message,"response":"network error"},atag);
+        Mixpanel.track("error",{"data":error,atag});
         var m = "🐒😴😴😴 等等试试";
         if(error.code == "ERR_NETWORK"){
           m = "网出错了😵 把代理或VPN关掉再试试.🐒🐒🐒在解决这个问题.";
@@ -123,8 +134,8 @@ const config = {
   initialMessages: initialMessages,
   customComponents: {
     // Replaces the default header
-    header: () => <div class="react-chatbot-kit-chat-header">说出你的烦恼或随便说点儿什么. 回答可能不完整, 全看心情和钱包. 回复比较慢, 请有点耐心</div>,
-    botAvatar: () => <div class="react-chatbot-kit-chat-bot-avatar"><div class="react-chatbot-kit-chat-bot-avatar-container"><p class="react-chatbot-kit-chat-bot-avatar-letter">🙊</p></div></div>
+    header: () => <div className="react-chatbot-kit-chat-header">说出你的烦恼或随便说点儿什么. 回答可能不完整, 全看心情和钱包. 回复比较慢, 请有点耐心</div>,
+    botAvatar: () => <div className="react-chatbot-kit-chat-bot-avatar"><div className="react-chatbot-kit-chat-bot-avatar-container"><p className="react-chatbot-kit-chat-bot-avatar-letter">{chatconfig.avatar}</p></div></div>
   },
   placeholderText:"在这里输入您的消息("+chatconfig.wordlimit+"字以内).",
   customMessages: {
