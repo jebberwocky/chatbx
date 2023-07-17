@@ -23,10 +23,14 @@ const chatconfig = {
   "api":'/chat'
 }
 
-if(Math.floor(Math.random() * 2)===0){
+if(Math.floor(Math.random() * 3)===0){
   chatconfig.m = "td3";
   chatconfig.avatar = "🙈";
   chatconfig.api = "/chat/newmonkey";
+}else if(Math.floor(Math.random() * 3)===1){
+  chatconfig.m = "v4";
+  chatconfig.avatar = "🙉";
+  chatconfig.api = "/chat/v4";
 }
 
 
