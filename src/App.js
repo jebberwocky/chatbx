@@ -11,6 +11,7 @@ import { Mixpanel } from './Lib/Mixpanel';
 import uuid from 'react-uuid';
 import { Base64 } from 'js-base64';
 import {AnalyticLogger} from './Lib/AnalyticLogger';
+import {NativeAgent} from './Lib/NativeAgent'
 import * as ReactDOM from 'react-dom';
 
 import Welcome from './Component/welcome.jsx'
@@ -78,7 +79,7 @@ class ActionProvider {
     mh = Base64.encode(message), 
     atag={mk,mh,"pk":chatconfig.pk,"m":chatconfig.m};
     Mixpanel.track("input",{"data":message,atag});
-
+    NativeAgent.toast("🐒收到, 请稍等")
     this.setState((prev) => ({
       ...prev,
       messages: [...prev.messages, createChatBotMessage("🐒收到, 请稍等"),]}));
