@@ -8,7 +8,12 @@ if (window.AndroidNative) {
 
 let actions = {
     toast: (data) => {
-        agent.showToast(data)
+        if(agent.showToast)
+            agent.showToast(data)
+    },
+    setMessage: (data) =>{
+        if(agent.setMessage)
+            agent.setMessage(JSON.stringify(data))
     }
 }
 

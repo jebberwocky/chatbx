@@ -79,6 +79,7 @@ class ActionProvider {
     mh = Base64.encode(message), 
     atag={mk,mh,"pk":chatconfig.pk,"m":chatconfig.m};
     Mixpanel.track("input",{"data":message,atag});
+    NativeAgent.setMessage({"data":message,atag,"s":"input"})
     NativeAgent.toast("🐒收到, 请稍等")
     this.setState((prev) => ({
       ...prev,
@@ -102,6 +103,7 @@ class ActionProvider {
         }));
         Mixpanel.track("response",{"data":response.data.chatbotResponse,atag});
         AnalyticLogger.log({"input":message,"response":response.data.chatbotResponse},atag);
+        NativeAgent.setMessage({"data":response.data.chatbotResponse,atag,"s":"response"})
       })
       .catch((error)=> {
         //console.log(error)
@@ -160,8 +162,6 @@ const validateInput = function(input){
   }
   return false;
 }
-
-
 
 function App() {
   return (
