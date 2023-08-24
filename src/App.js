@@ -16,10 +16,14 @@ import * as ReactDOM from 'react-dom';
 
 import Welcome from './Component/welcome.jsx'
 
+const queryParams = new URLSearchParams(window.location.search)
+const dk = queryParams.get("dk")
+
 const chatconfig = {
   "wordlimit":25,
   "m":'g3.5t',
   "pk":uuid(),
+  "dk":dk,
   "avatar":"🙊",
   "api":'/chat'
 }
@@ -77,7 +81,7 @@ class ActionProvider {
     const mk = uuid(),
     
     mh = Base64.encode(message), 
-    atag={mk,mh,"pk":chatconfig.pk,"m":chatconfig.m};
+    atag={mk,mh,"pk":chatconfig.pk,"dk":chatconfig.dk,"m":chatconfig.m};
     Mixpanel.track("input",{"data":message,atag});
     NativeAgent.setMessage({"data":message,atag,"s":"input"})
     NativeAgent.toast("🐒收到, 请稍等")
