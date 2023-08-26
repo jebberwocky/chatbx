@@ -1,4 +1,4 @@
-import logo from './logo.svg';
+//import logo from './logo.svg';
 import React from "react";
 import axios from 'axios';
 import Chatbot from "react-chatbot-kit";
@@ -12,7 +12,7 @@ import uuid from 'react-uuid';
 import { Base64 } from 'js-base64';
 import {AnalyticLogger} from './Lib/AnalyticLogger';
 import {NativeAgent} from './Lib/NativeAgent'
-import * as ReactDOM from 'react-dom';
+//import * as ReactDOM from 'react-dom';
 
 import Welcome from './Component/welcome.jsx'
 
@@ -21,7 +21,7 @@ const dk = queryParams.get("dk")
 
 const chatconfig = {
   "wordlimit":25,
-  "m":'g3.5t',
+  "m":'ft',
   "pk":uuid(),
   "dk":dk,
   "avatar":"🙊",
@@ -29,7 +29,7 @@ const chatconfig = {
 }
 
 if(Math.floor(Math.random() * 3)===0){
-  chatconfig.m = "td3";
+  chatconfig.m = "g3.5t";
   chatconfig.avatar = "🙈";
   chatconfig.api = "/chat/newmonkey";
 }else if(Math.floor(Math.random() * 3)===1){
@@ -94,7 +94,7 @@ class ActionProvider {
         atag
       })
       .then((response) => {
-        if(response.status&&response.status==200){
+        if(response.status&&response.status===200){
           if(!isHTMLMessage(response.data.chatbotResponse))
             botMessage = createChatBotMessage(response.data.chatbotResponse);
           else
@@ -114,7 +114,7 @@ class ActionProvider {
         AnalyticLogger.log({"input":message,"response":"network error"},atag);
         Mixpanel.track("error",{"data":error,atag});
         var m = "🐒😴😴😴 等等试试";
-        if(error.code == "ERR_NETWORK"){
+        if(error.code === "ERR_NETWORK"){
           m = "网出错了😵 把代理或VPN关掉再试试.🐒🐒🐒在解决这个问题.";
         }
         if(m){

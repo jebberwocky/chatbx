@@ -12,10 +12,12 @@ let actions = {
           atag
         })
         .then((response) => {
-            console.log(response)
+            if(response&&response.status!==200){
+                console.log(response)
+            }
         })
         .catch((error)=> {
-            console.log(error)
+            console.error(error)
         });
     }
 };
