@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 
 const Welcome = () => {
-  const [imageUrl, setImageUrl] = useState('');
+  //const [imageUrl, setImageUrl] = useState('');
   useEffect(() => {}, []);
 
   return (

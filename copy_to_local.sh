@@ -9,5 +9,7 @@ info() {
 error() {
   echo -e "\033[1;31m$@\033[0m" >&2
 }
+info "removing ${APP_PATH}"
+rm -r "${APP_PATH}/build"
 info "start copying ./build to ${APP_PATH}"
 cp -R ./build ${APP_PATH}

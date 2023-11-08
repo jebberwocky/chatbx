@@ -1,18 +1,20 @@
 
-
-let agent = {}
+let agent = null
 
 if (window.AndroidNative) {
     agent = window.AndroidNative;
 }
 
 let actions = {
+    isEmbedded: () => {
+        return (undefined !==window.AndroidNative)
+    },
     toast: (data) => {
-        if(agent.showToast)
+        if(agent&&agent.showToast)
             agent.showToast(data)
     },
     setMessage: (data) =>{
-        if(agent.setMessage)
+        if(agent&&agent.setMessage)
             agent.setMessage(JSON.stringify(data))
     }
 }

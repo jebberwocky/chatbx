@@ -18,7 +18,7 @@ import Welcome from './Component/welcome.jsx'
 
 const queryParams = new URLSearchParams(window.location.search)
 const dk = queryParams.get("dk")
-
+const imagepreix = "showmethepic:"
 const chatconfig = {
   "wordlimit":25,
   "m":'ft',
@@ -78,8 +78,12 @@ class ActionProvider {
   }
   handleMessage = (message) => {
     let botMessage = "";
+    if(message.startsWith(imagepreix)){
+      chatconfig.m = "dalle";
+      chatconfig.api = "/chat/dalle";
+      message = message.slice(imagepreix.length);
+    }
     const mk = uuid(),
-    
     mh = Base64.encode(message), 
     atag={mk,mh,"pk":chatconfig.pk,"dk":chatconfig.dk,"m":chatconfig.m};
     Mixpanel.track("input",{"data":message,atag});
@@ -121,7 +125,7 @@ class ActionProvider {
           this.setState((prev) => ({
             ...prev,
             //messages: [...prev.messages, createChatBotMessage(m),createCustomMessage('test','rating',{payload:{"input":message,"response":m}},),],
-            messages: [...prev.messages, createChatBotMessage(m),],
+            messages: [...prev.messages.slice(0,-1), createChatBotMessage(m),],
           }));
         }
       });
@@ -180,5 +184,7 @@ function App() {
     </div>
   );
 }
+
+console.log("running embedded:"+NativeAgent.isEmbedded())
 
 export default App;
