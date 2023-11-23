@@ -1,10 +1,11 @@
 //import logo from './logo.svg';
-import React from "react";
+import React,{ useState } from "react";
 import axios from 'axios';
 import Chatbot from "react-chatbot-kit";
 import { createChatBotMessage,createCustomMessage } from "react-chatbot-kit";
 import RatingMessage from './CustomMessage/rating';
 import HtmlMessage from './CustomMessage/html';
+import UploaderMessage from './CustomMessage/uploader';
 import 'react-chatbot-kit/build/main.css';
 import './App.css';
 import { Mixpanel } from './Lib/Mixpanel';
@@ -15,10 +16,12 @@ import {NativeAgent} from './Lib/NativeAgent'
 //import * as ReactDOM from 'react-dom';
 
 import Welcome from './Component/welcome.jsx'
+import {unmountComponentAtNode} from "react-dom";
 
 const queryParams = new URLSearchParams(window.location.search)
 const dk = queryParams.get("dk")
 const imagepreix = "showmethepic:"
+const imageuploadpreix = "uploadpic:"
 const chatconfig = {
   "wordlimit":25,
   "m":'ft',
@@ -46,6 +49,11 @@ const client = axios.create({
 
 function isHTMLMessage(m){
   let r = /<[a-z/][\s\S]*>/i.test(m);
+  return r;
+}
+
+function isLocalMesssage(m){
+  let r = m.startsWith(imageuploadpreix)
   return r;
 }
 
@@ -77,6 +85,7 @@ class ActionProvider {
     this.createCustomMessage = createCustomMessage;
   }
   handleMessage = (message) => {
+
     let botMessage = "";
     if(message.startsWith(imagepreix)){
       chatconfig.m = "dalle";
@@ -84,7 +93,7 @@ class ActionProvider {
       message = message.slice(imagepreix.length);
     }
     const mk = uuid(),
-    mh = Base64.encode(message), 
+    mh = Base64.encode(message),
     atag={mk,mh,"pk":chatconfig.pk,"dk":chatconfig.dk,"m":chatconfig.m};
     Mixpanel.track("input",{"data":message,atag});
     NativeAgent.setMessage({"data":message,atag,"s":"input"})
@@ -92,43 +101,54 @@ class ActionProvider {
     this.setState((prev) => ({
       ...prev,
       messages: [...prev.messages, createChatBotMessage("🐒收到, 请稍等"),]}));
-    client
-      .post(chatconfig.api, {
-        "input":message,
-        atag
-      })
-      .then((response) => {
-        if(response.status&&response.status===200){
-          if(!isHTMLMessage(response.data.chatbotResponse))
-            botMessage = createChatBotMessage(response.data.chatbotResponse);
-          else
-            botMessage = createCustomMessage(response.data.chatbotResponse,'chathtml',{payload:{"m":response.data.chatbotResponse,}})
-        }
-        this.setState((prev) => ({
-          ...prev,
-          messages: [...prev.messages, botMessage,
-            createCustomMessage('test','rating',{payload: {"input":message,"response":response.data.chatbotResponse,atag},}),],
-        }));
-        Mixpanel.track("response",{"data":response.data.chatbotResponse,atag});
-        AnalyticLogger.log({"input":message,"response":response.data.chatbotResponse},atag);
-        NativeAgent.setMessage({"data":response.data.chatbotResponse,atag,"s":"response"})
-      })
-      .catch((error)=> {
-        //console.log(error)
-        AnalyticLogger.log({"input":message,"response":"network error"},atag);
-        Mixpanel.track("error",{"data":error,atag});
-        var m = "🐒😴😴😴 等等试试";
-        if(error.code === "ERR_NETWORK"){
-          m = "网出错了😵 把代理或VPN关掉再试试.🐒🐒🐒在解决这个问题.";
-        }
-        if(m){
-          this.setState((prev) => ({
-            ...prev,
-            //messages: [...prev.messages, createChatBotMessage(m),createCustomMessage('test','rating',{payload:{"input":message,"response":m}},),],
-            messages: [...prev.messages.slice(0,-1), createChatBotMessage(m),],
-          }));
-        }
-      });
+    if(isLocalMesssage(message)){
+      var uploaderMessage = createCustomMessage(message, 'uploader', {payload: {"input":message,atag}})
+      this.setState((prev) => ({
+        ...prev,
+        //messages: [...prev.messages, createChatBotMessage(m),createCustomMessage('test','rating',{payload:{"input":message,"response":m}},),],
+        messages: [...prev.messages.slice(0,-1), uploaderMessage],
+      }));
+    }else {
+      //remote messaging started
+      client
+          .post(chatconfig.api, {
+            "input":message,
+            atag
+          })
+          .then((response) => {
+            if(response.status&&response.status===200){
+              if(!isHTMLMessage(response.data.chatbotResponse))
+                botMessage = createChatBotMessage(response.data.chatbotResponse);
+              else
+                botMessage = createCustomMessage(response.data.chatbotResponse,'chathtml',{payload:{"m":response.data.chatbotResponse,}})
+            }
+            this.setState((prev) => ({
+              ...prev,
+              messages: [...prev.messages, botMessage,
+                createCustomMessage('test','rating',{payload: {"input":message,"response":response.data.chatbotResponse,atag},}),],
+            }));
+            Mixpanel.track("response",{"data":response.data.chatbotResponse,atag});
+            AnalyticLogger.log({"input":message,"response":response.data.chatbotResponse},atag);
+            NativeAgent.setMessage({"data":response.data.chatbotResponse,atag,"s":"response"})
+          })
+          .catch((error)=> {
+            //console.log(error)
+            AnalyticLogger.log({"input":message,"response":"network error"},atag);
+            Mixpanel.track("error",{"data":error,atag});
+            var m = "🐒😴😴😴 等等试试";
+            if(error.code === "ERR_NETWORK"){
+              m = "网出错了😵 把代理或VPN关掉再试试.🐒🐒🐒在解决这个问题.";
+            }
+            if(m){
+              this.setState((prev) => ({
+                ...prev,
+                //messages: [...prev.messages, createChatBotMessage(m),createCustomMessage('test','rating',{payload:{"input":message,"response":m}},),],
+                messages: [...prev.messages.slice(0,-1), createChatBotMessage(m),],
+              }));
+            }
+          });
+      //remote messaging done
+    }
   };
 
 }
@@ -156,6 +176,7 @@ const config = {
   customMessages: {
     rating: (props) => <RatingMessage {...props} />,
     chathtml:(props)=><HtmlMessage {...props} />,
+    uploader:(props)=><UploaderMessage {...props} />,
   },
   widgets: [
     {
