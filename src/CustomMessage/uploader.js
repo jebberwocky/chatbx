@@ -1,6 +1,7 @@
 import React,{ useState } from 'react'
 import {createChatBotMessage, createCustomMessage} from "react-chatbot-kit";
 import axios from "axios";
+import prompts from '../prompts.json';
 import {Mixpanel} from "../Lib/Mixpanel";
 import {AnalyticLogger} from "../Lib/AnalyticLogger";
 import {NativeAgent} from "../Lib/NativeAgent";
@@ -14,10 +15,16 @@ function isHTMLMessage(m){
     let r = /<[a-z/][\s\S]*>/i.test(m);
     return r;
 }
-function postMessage(atag,path,props){
+function postMessage(payload,path,props){
+    const atag = payload.atag
     let botMessage = "";
-    const message = "This GPT, named Diplomat Interpreter, specializes in interpreting and providing insights into diplomatic language, particularly in Chinese. It aims to help users understand the nuances and subtleties often present in diplomatic statements, offering clear explanations and cultural context. The GPT avoids making speculative or politically charged statements and maintains a neutral, informative tone. It focuses on linguistic analysis and cultural understanding, steering clear of personal opinions or sensitive political commentary. When answering questions, it employs a deep-breathing strategy and references cases and research from uploaded documents. it seeks clarification from users and network search to ensure accurate and relevant interpretations.";
+
+    const message = prompts.vision_prompt[payload.input];
     const image_url = "http://colbt.cc:3309" + path;
+    Mixpanel.track("input",{"data":{message,image_url},atag});
+    NativeAgent.setMessage({"data":{message,image_url},atag,"s":"input"})
+    NativeAgent.toast("🐒收到, 请稍等")
+
     client
         .post("/chat/vision", {
             "input":message,
@@ -50,9 +57,14 @@ function postMessage(atag,path,props){
                 messages: [...prev.messages, botMessage,
                     createCustomMessage('test','rating',{payload: {"input":message,"response":response.data.chatbotResponse,atag},}),],
             }));
+            Mixpanel.track("response",{"data":response.data.chatbotResponse,atag});
+            AnalyticLogger.log({"input":{message,image_url},"response":response.data.chatbotResponse},atag);
+            NativeAgent.setMessage({"data":response.data.chatbotResponse,atag,"s":"response"})
         })
         .catch((error)=> {
             console.log(error)
+            AnalyticLogger.log({"input":{message,image_url},"response":"network error"},atag);
+            Mixpanel.track("error",{"data":error,atag});
             var m = "🐒😴😴😴 等等试试";
             if(error.code === "ERR_NETWORK"){
                 m = "网出错了😵 把代理或VPN关掉再试试.🐒🐒🐒在解决这个问题.";
@@ -70,12 +82,14 @@ function postMessage(atag,path,props){
 const Uploader = (props) => {
     let payload = props.payload
     const [selectedImage, setSelectedImage] = useState(false);
+    const [uploaded, setUploaded] = useState(true);
     return (
         <div class="react-chatbot-kit-chat-bot-message-container">
             <div class="react-chatbot-kit-chat-bot-message">
                 {selectedImage && (
                     <div>
                         <img
+                            alt=""
                             width={"250px"}
                             src={URL.createObjectURL(selectedImage)}
                         />
@@ -83,6 +97,7 @@ const Uploader = (props) => {
                     </div>
                 )}
                 <input type="file" accept="image/*"
+                       disabled={!uploaded}
                        onChange={(event) => {
                            console.log(event.target.files[0]);
                            setSelectedImage(event.target.files[0]);
@@ -94,18 +109,21 @@ const Uploader = (props) => {
                            const image = event.target.files[0];
                            const formData = new FormData();
                            formData.append("image", image);
+                           setUploaded(false)
                            axios
                                .post("http://colbt.cc:3309/upload/upload", formData,{headers: {
                                     "Content-Type": "multipart/form-data",
                                 },})
                                .then((response) => {
-                                   console.log(response)
+                                   //console.log(response)
+                                   setUploaded(true)
                                    if(response.data&&response.data.status === 's'){
-                                       postMessage(payload.atag, response.data.path, props)
+                                       postMessage(payload, response.data.path, props)
                                    }
                                })
                                .catch((error) => {
-                                  console.log(error)
+                                   setUploaded(true)
+                                   console.log(error)
                                });
                        }}
                 />

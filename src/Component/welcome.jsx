@@ -1,5 +1,5 @@
 // new file called DogPicture.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
 const Welcome = () => {
   //const [imageUrl, setImageUrl] = useState('');

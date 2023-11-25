@@ -1,27 +1,26 @@
 //import logo from './logo.svg';
-import React,{ useState } from "react";
+import React from "react";
 import axios from 'axios';
-import Chatbot from "react-chatbot-kit";
-import { createChatBotMessage,createCustomMessage } from "react-chatbot-kit";
+import Chatbot, {createChatBotMessage, createCustomMessage} from "react-chatbot-kit";
 import RatingMessage from './CustomMessage/rating';
 import HtmlMessage from './CustomMessage/html';
 import UploaderMessage from './CustomMessage/uploader';
 import 'react-chatbot-kit/build/main.css';
 import './App.css';
-import { Mixpanel } from './Lib/Mixpanel';
+import {Mixpanel} from './Lib/Mixpanel';
 import uuid from 'react-uuid';
-import { Base64 } from 'js-base64';
+import {Base64} from 'js-base64';
 import {AnalyticLogger} from './Lib/AnalyticLogger';
 import {NativeAgent} from './Lib/NativeAgent'
 //import * as ReactDOM from 'react-dom';
-
 import Welcome from './Component/welcome.jsx'
-import {unmountComponentAtNode} from "react-dom";
+//import {unmountComponentAtNode} from "react-dom";
 
 const queryParams = new URLSearchParams(window.location.search)
 const dk = queryParams.get("dk")
 const imagepreix = "showmethepic:"
-const imageuploadpreix = "uploadpic:"
+const imageuploadprefix = "uploadpic:"
+const recognizethisprefix = "recognizethis:"
 const chatconfig = {
   "wordlimit":25,
   "m":'ft',
@@ -52,9 +51,8 @@ function isHTMLMessage(m){
   return r;
 }
 
-function isLocalMesssage(m){
-  let r = m.startsWith(imageuploadpreix)
-  return r;
+function isImageUploadMesssage(m){
+  return (m.startsWith(imageuploadprefix) || m.startsWith(recognizethisprefix));
 }
 
 // MessageParser starter code
@@ -101,7 +99,7 @@ class ActionProvider {
     this.setState((prev) => ({
       ...prev,
       messages: [...prev.messages, createChatBotMessage("🐒收到, 请稍等"),]}));
-    if(isLocalMesssage(message)){
+    if(isImageUploadMesssage(message)){
       var uploaderMessage = createCustomMessage(message, 'uploader', {payload: {"input":message,atag}})
       this.setState((prev) => ({
         ...prev,
