@@ -16,6 +16,7 @@ const Welcome = () => {
             <ul><li>生成图片 showmethepic:生成一张X图</li>
                 <li>图片识别 uploadpic:</li>
                 <li>识别热量 kcalthis:</li>
+                <li>转语音 say:</li>
             </ul>
         </div>
         <div class="react-chatbot-kit-chat-bot-message-arrow"></div>

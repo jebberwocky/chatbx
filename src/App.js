@@ -92,20 +92,22 @@ class ActionProvider {
   }
   handleMessage = (message) => {
 
-    let botMessage = "";
+    let botMessage = "",
+        _chatconfig = {};
+    Object.assign(_chatconfig,chatconfig);
     if(message.startsWith(imagepreix)){
-      chatconfig.m = "dalle";
-      chatconfig.api = "/chat/dalle";
+      _chatconfig.m = "dalle";
+      _chatconfig.api = "/chat/dalle";
       message = message.slice(imagepreix.length);
     }
     if(message.startsWith(ttsprefix)){
-      chatconfig.m = "tts";
-      chatconfig.api = "/chat/tts";
+      _chatconfig.m = "tts";
+      _chatconfig.api = "/chat/tts";
       message = message.slice(ttsprefix.length);
     }
     const mk = uuid(),
     mh = Base64.encode(message),
-    atag={mk,mh,"pk":chatconfig.pk,"dk":chatconfig.dk,"m":chatconfig.m};
+    atag={mk,mh,"pk":_chatconfig.pk,"dk":_chatconfig.dk,"m":_chatconfig.m};
     Mixpanel.track("input",{"data":message,atag});
     NativeAgent.setMessage({"data":message,atag,"s":"input"})
     NativeAgent.toast("🐒收到, 请稍等")
@@ -122,7 +124,7 @@ class ActionProvider {
     }else {
       //remote messaging started
       client
-          .post(chatconfig.api, {
+          .post(_chatconfig.api, {
             "input":message,
             atag
           })
