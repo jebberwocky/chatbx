@@ -10,16 +10,27 @@ const client = axios.create({
     baseURL:  process.env.REACT_APP_API_URL
 });
 
+const wildcardprefix = "wildcard:"
+const variationprefix = "variation:"
 
 function isHTMLMessage(m){
     let r = /<[a-z/][\s\S]*>/i.test(m);
     return r;
 }
+
+function getImagePrompt(vision_prompts, key){
+    if(key.startsWith(wildcardprefix)){
+        return key.split(wildcardprefix)[1]
+    }else{
+        return vision_prompts[key];
+    }
+}
+
 function postMessage(payload,path,props){
     const atag = payload.atag
     let botMessage = "";
 
-    const message = prompts.vision_prompt[payload.input];
+    const message = getImagePrompt(prompts.vision_prompt, payload.input);
     const image_url = "http://colbt.cc:3309" + path;
     Mixpanel.track("input",{"data":{message,image_url},atag});
     NativeAgent.setMessage({"data":{message,image_url},atag,"s":"input"})
@@ -96,7 +107,7 @@ const Uploader = (props) => {
                         <br />
                     </div>
                 )}
-                <input type="file" accept="image/*"
+                <input type="file" accept="image/png, image/jpeg"
                        disabled={!uploaded}
                        onChange={(event) => {
                            console.log(event.target.files[0]);
@@ -110,8 +121,12 @@ const Uploader = (props) => {
                            const formData = new FormData();
                            formData.append("image", image);
                            setUploaded(false)
+                           var post_url = "http://colbt.cc:3309/upload/upload";
+                           if(props.payload.input.startsWith(variationprefix)) {
+                               post_url = "http://colbt.cc:3309/upload/upload/png/forced"
+                           }
                            axios
-                               .post("http://colbt.cc:3309/upload/upload", formData,{headers: {
+                               .post(post_url, formData,{headers: {
                                     "Content-Type": "multipart/form-data",
                                 },})
                                .then((response) => {

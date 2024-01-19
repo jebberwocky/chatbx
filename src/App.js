@@ -1,5 +1,5 @@
 //import logo from './logo.svg';
-import React from "react";
+import React, {Component, useEffect} from "react";
 import axios from 'axios';
 import Chatbot, {createChatBotMessage, createCustomMessage} from "react-chatbot-kit";
 import RatingMessage from './CustomMessage/rating';
@@ -21,6 +21,10 @@ const dk = queryParams.get("dk")
 const imagepreix = "showmethepic:"
 const imageuploadprefix = "uploadpic:"
 const recognizethisprefix = "recognizethis:"
+const wildcardprefix = "wildcard:"
+const kcalthis = "kcalthis:"
+const variationprefix = "variation:"
+const ttsprefix = "say:"
 const chatconfig = {
   "wordlimit":25,
   "m":'ft',
@@ -51,8 +55,12 @@ function isHTMLMessage(m){
   return r;
 }
 
-function isImageUploadMesssage(m){
-  return (m.startsWith(imageuploadprefix) || m.startsWith(recognizethisprefix));
+function isImageUploadMesssage(m) {
+  return (m.startsWith(imageuploadprefix) ||
+          m.startsWith(recognizethisprefix) ||
+          m.startsWith(kcalthis) ||
+          m.startsWith(wildcardprefix)) ||
+      m.startsWith(variationprefix);
 }
 
 // MessageParser starter code
@@ -89,6 +97,11 @@ class ActionProvider {
       chatconfig.m = "dalle";
       chatconfig.api = "/chat/dalle";
       message = message.slice(imagepreix.length);
+    }
+    if(message.startsWith(ttsprefix)){
+      chatconfig.m = "tts";
+      chatconfig.api = "/chat/tts";
+      message = message.slice(ttsprefix.length);
     }
     const mk = uuid(),
     mh = Base64.encode(message),
@@ -191,6 +204,11 @@ const validateInput = function(input){
 }
 
 function App() {
+
+  useEffect(() => {
+
+  },[]);
+
   return (
     <div className="App">
       <Chatbot
