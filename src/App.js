@@ -140,7 +140,7 @@ class ActionProvider {
               messages: [...prev.messages, botMessage,
                 createCustomMessage('test','rating',{payload: {"input":message,"response":response.data.chatbotResponse,atag},}),],
             }));
-            Mixpanel.track("response",{"data":response.data.chatbotResponse,atag});
+            Mixpanel.track("response",{"data":response.data.chatbotResponse,"rawdata":response.data,atag});
             AnalyticLogger.log({"input":message,"response":response.data.chatbotResponse},atag);
             NativeAgent.setMessage({"data":response.data.chatbotResponse,atag,"s":"response"})
           })
