@@ -5,6 +5,7 @@ import Chatbot, {createChatBotMessage, createCustomMessage} from "react-chatbot-
 import RatingMessage from './CustomMessage/rating';
 import HtmlMessage from './CustomMessage/html';
 import UploaderMessage from './CustomMessage/uploader';
+import DivinationMessage from "./CustomMessage/divination.js";
 import 'react-chatbot-kit/build/main.css';
 import './App.css';
 import {Mixpanel} from './Lib/Mixpanel';
@@ -25,6 +26,7 @@ const wildcardprefix = "wildcard:"
 const kcalthis = "kcalthis:"
 const variationprefix = "variation:"
 const ttsprefix = "say:"
+const qiuguakeyword = "求一卦"
 const chatconfig = {
   "wordlimit":25,
   "m":'ft',
@@ -61,6 +63,10 @@ function isImageUploadMesssage(m) {
           m.startsWith(kcalthis) ||
           m.startsWith(wildcardprefix)) ||
       m.startsWith(variationprefix);
+}
+
+function isQiuGua(m){
+  return (m.includes(qiuguakeyword))
 }
 
 // MessageParser starter code
@@ -121,7 +127,14 @@ class ActionProvider {
         //messages: [...prev.messages, createChatBotMessage(m),createCustomMessage('test','rating',{payload:{"input":message,"response":m}},),],
         messages: [...prev.messages.slice(0,-1), uploaderMessage],
       }));
-    }else {
+    }else if(isQiuGua(message)){
+      var divinationMessage = createCustomMessage(message, 'divination', {payload: {"input":message,atag}})
+      this.setState((prev) => ({
+        ...prev,
+        //messages: [...prev.messages, createChatBotMessage(m),createCustomMessage('test','rating',{payload:{"input":message,"response":m}},),],
+        messages: [...prev.messages.slice(0,-1), divinationMessage],
+      }));
+    }else{
       //remote messaging started
       client
           .post(_chatconfig.api, {
@@ -190,6 +203,7 @@ const config = {
     rating: (props) => <RatingMessage {...props} />,
     chathtml:(props)=><HtmlMessage {...props} />,
     uploader:(props)=><UploaderMessage {...props} />,
+    divination:(props)=><DivinationMessage {...props} />,
   },
   widgets: [
     {
