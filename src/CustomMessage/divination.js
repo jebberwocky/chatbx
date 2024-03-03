@@ -19,7 +19,7 @@ function isHTMLMessage(m){
 }
 
 function getDivinationPrompt(gua_text){
-    return "解卦 "+gua_text
+    return "你是一个只解释易经卦像的bot, 解释以下易经卦像:"+JSON.stringify(gua_text)+""
 }
 
 function postMessage(payload,gua,props){
