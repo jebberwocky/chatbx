@@ -1,5 +1,5 @@
 //import logo from './logo.svg';
-import React, {Component, useEffect} from "react";
+import React, {useEffect} from "react";
 import axios from 'axios';
 import Chatbot, {createChatBotMessage, createCustomMessage} from "react-chatbot-kit";
 import RatingMessage from './CustomMessage/rating';
@@ -26,7 +26,7 @@ const wildcardprefix = "wildcard:"
 const kcalthis = "kcalthis:"
 const variationprefix = "variation:"
 const ttsprefix = "say:"
-const qiuguakeyword = "求一卦"
+const qiuguakeywords = ["求一卦","算卦","求卦"]
 const chatconfig = {
   "wordlimit":25,
   "m":'ft',
@@ -66,7 +66,7 @@ function isImageUploadMesssage(m) {
 }
 
 function isQiuGua(m){
-  return (m.includes(qiuguakeyword))
+  return (qiuguakeywords.some(function(el){return m.indexOf(el)>=0;}))
 }
 
 // MessageParser starter code

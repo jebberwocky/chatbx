@@ -1,7 +1,6 @@
 import React,{ useState } from 'react'
 import {createChatBotMessage, createCustomMessage} from "react-chatbot-kit";
 import axios from "axios";
-import prompts from '../prompts.json';
 import {Mixpanel} from "../Lib/Mixpanel";
 import {AnalyticLogger} from "../Lib/AnalyticLogger";
 import {NativeAgent} from "../Lib/NativeAgent";
@@ -9,9 +8,6 @@ import {NativeAgent} from "../Lib/NativeAgent";
 const client = axios.create({
     baseURL:  process.env.REACT_APP_API_URL
 });
-
-const wildcardprefix = "wildcard:"
-const variationprefix = "variation:"
 
 function isHTMLMessage(m){
     let r = /<[a-z/][\s\S]*>/i.test(m);
