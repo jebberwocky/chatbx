@@ -18,7 +18,13 @@ function getDivinationPrompt(gua_text){
     return "你是一个只解释易经卦像的bot, 解释以下易经卦像:"+JSON.stringify(gua_text)+""
 }
 
-function postMessage(payload,gua,props){
+const updateLastMessage = (props, message) => {
+    props.setState((prev) => {
+        return { ...prev, messages: [...prev.messages.slice(0, -1), { ...prev.messages.at(-1), message }]};
+    });
+};
+
+async function postMessage(payload,gua,props){
     const atag = payload.atag
     let botMessage = "";
     const message = getDivinationPrompt(gua);
@@ -26,28 +32,14 @@ function postMessage(payload,gua,props){
     NativeAgent.setMessage({"data":{message},atag,"s":"input"})
     NativeAgent.toast("🐒收到, 请稍等")
     //always use v4 for 解卦
-    client
-        .post("/chat/v4", {
-            "input":message,
-            atag
-        })
-        .then((response) => {
-            if(response.status&&response.status===200){
-                if(!isHTMLMessage(response.data.chatbotResponse))
-                    botMessage = createChatBotMessage(response.data.chatbotResponse);
-                else
-                    botMessage = createCustomMessage(response.data.chatbotResponse,'chathtml',{payload:{"m":response.data.chatbotResponse,}})
-            }
-            props.setState((prev) => ({
-                ...prev,
-                messages: [...prev.messages, botMessage,
-                    createCustomMessage('test','rating',{payload: {"input":message,"response":response.data.chatbotResponse,atag},}),],
-            }));
-            Mixpanel.track("response",{"data":response.data.chatbotResponse,"rawdata":response.data,atag});
-            AnalyticLogger.log({"input":{message},"response":response.data.chatbotResponse},atag);
-            NativeAgent.setMessage({"data":response.data.chatbotResponse,atag,"s":"response"})
-        })
-        .catch((error)=> {
+    const response = await fetch('http://colbt.cc:8661/beta/v4', {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({"input":message,
+            atag})
+        }).catch((error) => {
             console.log(error)
             AnalyticLogger.log({"input":{message},"response":"network error"},atag);
             Mixpanel.track("error",{"data":error,atag});
@@ -63,6 +55,20 @@ function postMessage(payload,gua,props){
                 }));
             }
         });
+    let vs = [];
+    const reader = response.body.pipeThrough(new TextDecoderStream()).getReader()
+    while (true) {
+        const {value, done} = await reader.read();
+        if (done){
+            console.log(vs)
+            Mixpanel.track("response",{"data":vs.join("")});
+            AnalyticLogger.log({"input":message,"response":vs.join("")},atag);
+            NativeAgent.setMessage({"data":vs.join(""),"s":"response"})
+            break;
+        }
+        vs.push(value)
+        updateLastMessage(props,vs.join(""))
+    }
 }
 
 const Divination = (props) => {
