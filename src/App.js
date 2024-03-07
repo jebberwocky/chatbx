@@ -26,7 +26,7 @@ const wildcardprefix = "wildcard:"
 const kcalthis = "kcalthis:"
 const variationprefix = "variation:"
 const ttsprefix = "say:"
-const qiuguakeywords = ["求一卦","算卦","求卦"]
+const qiuguakeywords = ["求一卦","算卦","求卦","卦","占卜"]
 const chatconfig = {
   "wordlimit":25,
   "m":'ft',

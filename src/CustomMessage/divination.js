@@ -1,5 +1,5 @@
 import React,{ useState } from 'react'
-import {createChatBotMessage, createCustomMessage} from "react-chatbot-kit";
+import {createChatBotMessage,createClientMessage,createCustomMessage} from "react-chatbot-kit";
 import axios from "axios";
 import {Mixpanel} from "../Lib/Mixpanel";
 import {AnalyticLogger} from "../Lib/AnalyticLogger";
@@ -25,6 +25,19 @@ const updateLastMessage = (props, message) => {
 };
 
 async function postMessage(payload,gua,props){
+    console.log(gua)
+    let m_gua = "卦象: "+gua[0]+" "+gua[1]+ " "+gua[2]+ ", [卦辭]:"+gua[3][7]+" ", 
+    m_guaci = gua[3][7]+""
+    props.setState((prev) => ({
+        ...prev,
+        //messages: [...prev.messages, createChatBotMessage(m),createCustomMessage('test','rating',{payload:{"input":message,"response":m}},),],
+        messages: [...prev.messages.slice(0,-1), createChatBotMessage(m_gua),],
+    }));
+    props.setState((prev) => ({
+        ...prev,
+        //messages: [...prev.messages, createChatBotMessage(m),createCustomMessage('test','rating',{payload:{"input":message,"response":m}},),],
+        messages: [...prev.messages, createChatBotMessage("..."),],
+    }));
     const atag = payload.atag
     let botMessage = "";
     const message = getDivinationPrompt(gua);
@@ -60,8 +73,10 @@ async function postMessage(payload,gua,props){
     while (true) {
         const {value, done} = await reader.read();
         if (done){
-            console.log(vs)
+            //console.log(vs)
             Mixpanel.track("response",{"data":vs.join("")});
+            //extra log to indicate jiegua
+            Mixpanel.track("jiegua",{"data":vs.join(""),gua});
             AnalyticLogger.log({"input":message,"response":vs.join("")},atag);
             NativeAgent.setMessage({"data":vs.join(""),"s":"response"})
             break;
@@ -79,10 +94,9 @@ const Divination = (props) => {
             <div class="react-chatbot-kit-chat-bot-message">
                 <input type="button" 
                         class="react-chatbot-kit-chat-btn-send"
-                        value="点此诚心求一卦"
+                        value="点此诚心求卦🙏"
                        disabled={!submitted}
                        onClick={(event) => {
-                           console.log(props)
                            props.setState((prev) => ({
                                ...prev,
                                messages: [...prev.messages, createChatBotMessage("🐒收到, 请稍等"),]}));
