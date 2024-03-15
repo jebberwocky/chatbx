@@ -14,8 +14,8 @@ function isHTMLMessage(m){
     return r;
 }
 
-function getDivinationPrompt(gua_text){
-    return "你是一个只解释易经卦像的bot, 解释以下易经卦像:"+JSON.stringify(gua_text)+""
+function getDivinationPrompt(gua_text, input){
+    return "你是一个只解释易经卦像的bot, 关连"+input+"为主题来解释以下易经卦像:"+JSON.stringify(gua_text)+""
 }
 
 const updateLastMessage = (props, message) => {
@@ -39,8 +39,9 @@ async function postMessage(payload,gua,props){
         messages: [...prev.messages, createChatBotMessage("..."),],
     }));
     const atag = payload.atag
+    const user_input = payload.input
     let botMessage = "";
-    const message = getDivinationPrompt(gua);
+    const message = getDivinationPrompt(gua,user_input);
     Mixpanel.track("input",{"data":{message},atag});
     NativeAgent.setMessage({"data":{message},atag,"s":"input"})
     NativeAgent.toast("收到, 请稍等")
