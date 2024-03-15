@@ -30,17 +30,19 @@
 }
 
 .react-chatbot-kit-chat-bot-message {
-  background-color: #008b8b;
+  background-color: #f5dcbf;
+  color:#382e22;
 }
 
 .react-chatbot-kit-chat-bot-message-arrow {
-  border-right: 8px solid #008b8b;
+  border-right: 8px solid #f5dcbf;
 }
 
 /* chat botton */
 
 .react-chatbot-kit-chat-btn-send {
-  background-color: #008b8b;
+  background-color: #f5dcbf;
+  color:#382e22;
   border-bottom-right-radius: 0%;
 }
 
@@ -95,7 +97,7 @@
 }
 
 .react-chatbot-kit-chat-bot-message span a{
-  color:#ffffff;
+  color:#000000;
 }
 
 .react-chatbot-kit-chat-bot-message img{

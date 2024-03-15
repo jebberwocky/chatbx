@@ -34,7 +34,7 @@ function postMessage(payload,path,props){
     const image_url = "http://colbt.cc:3309" + path;
     Mixpanel.track("input",{"data":{message,image_url},atag});
     NativeAgent.setMessage({"data":{message,image_url},atag,"s":"input"})
-    NativeAgent.toast("🐒收到, 请稍等")
+    NativeAgent.toast("收到, 请稍等")
 
     client
         .post("/chat/vision", {
@@ -115,7 +115,7 @@ const Uploader = (props) => {
                            console.log(props)
                            props.setState((prev) => ({
                                ...prev,
-                               messages: [...prev.messages, createChatBotMessage("🐒收到, 请稍等"),]}));
+                               messages: [...prev.messages, createChatBotMessage("收到, 请稍等"),]}));
                            event.preventDefault();
                            const image = event.target.files[0];
                            const formData = new FormData();

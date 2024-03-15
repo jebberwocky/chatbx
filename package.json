@@ -29,7 +29,8 @@
     "build": "env-cmd -f .env.production react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "deploy": "scp -r ./build/* root@whereyogi.com:/mnt/volume_nyc1_01/web/chatbox/build/ "
+    "deploy": "scp -r ./build/* root@whereyogi.com:/mnt/volume_nyc1_01/web/chatbox/build/ ",
+    "deploygua": "scp -r ./build/* root@whereyogi.com:/mnt/volume_nyc1_01/web/gua/build/ "
   },
   "eslintConfig": {
     "extends": [

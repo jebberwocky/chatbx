@@ -43,7 +43,7 @@ async function postMessage(payload,gua,props){
     const message = getDivinationPrompt(gua);
     Mixpanel.track("input",{"data":{message},atag});
     NativeAgent.setMessage({"data":{message},atag,"s":"input"})
-    NativeAgent.toast("🐒收到, 请稍等")
+    NativeAgent.toast("收到, 请稍等")
     //always use v4 for 解卦
     const response = await fetch('http://colbt.cc:8661/beta/v4', {
             method: 'POST',
@@ -99,7 +99,7 @@ const Divination = (props) => {
                        onClick={(event) => {
                            props.setState((prev) => ({
                                ...prev,
-                               messages: [...prev.messages, createChatBotMessage("🐒收到, 请稍等"),]}));
+                               messages: [...prev.messages, createChatBotMessage("收到, 请稍等"),]}));
                            event.preventDefault();
                            setSubmitted(false)
                            var get_url = "http://colbt.cc:8686/suangua";

@@ -32,17 +32,17 @@ const chatconfig = {
   "m":'ft',
   "pk":uuid(),
   "dk":dk,
-  "avatar":"🙊",
+  "avatar":"👴",
   "api":'/chat'
 }
 
 if(Math.floor(Math.random() * 3)===0){
   chatconfig.m = "g3.5t";
-  chatconfig.avatar = "🙈";
+  chatconfig.avatar = "👴";
   chatconfig.api = "/chat/newmonkey";
 }else if(Math.floor(Math.random() * 3)===1){
   chatconfig.m = "v4";
-  chatconfig.avatar = "🙉";
+  chatconfig.avatar = "👴";
   chatconfig.api = "/chat/v4";
 }
 
@@ -116,10 +116,10 @@ class ActionProvider {
     atag={mk,mh,"pk":_chatconfig.pk,"dk":_chatconfig.dk,"m":_chatconfig.m};
     Mixpanel.track("input",{"data":message,atag});
     NativeAgent.setMessage({"data":message,atag,"s":"input"})
-    NativeAgent.toast("🐒收到, 请稍等")
+    NativeAgent.toast("收到, 请稍等")
     this.setState((prev) => ({
       ...prev,
-      messages: [...prev.messages, createChatBotMessage("🐒收到, 请稍等"),]}));
+      messages: [...prev.messages, createChatBotMessage("收到, 请稍等"),]}));
     if(isImageUploadMesssage(message)){
       var uploaderMessage = createCustomMessage(message, 'uploader', {payload: {"input":message,atag}})
       this.setState((prev) => ({
@@ -195,7 +195,7 @@ const config = {
   initialMessages: initialMessages,
   customComponents: {
     // Replaces the default header
-    header: () => <div className="react-chatbot-kit-chat-header">说出你的烦恼或随便说点儿什么. 回答可能不完整, 全看心情和钱包. 回复比较慢, 请有点耐心</div>,
+    header: () => <div className="react-chatbot-kit-chat-header">说出你的烦恼或算一卦, 不会收集任何个人信息.</div>,
     botAvatar: () => <div className="react-chatbot-kit-chat-bot-avatar"><div className="react-chatbot-kit-chat-bot-avatar-container"><p className="react-chatbot-kit-chat-bot-avatar-letter">{chatconfig.avatar}</p></div></div>
   },
   placeholderText:"在这里输入您的消息("+chatconfig.wordlimit+"字以内).",
