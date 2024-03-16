@@ -104,6 +104,8 @@ const Divination = (props) => {
                            event.preventDefault();
                            setSubmitted(false)
                            var get_url = "http://colbt.cc:8686/suangua";
+                           if(payload&&payload.input)
+                                get_url += "?seed="+encodeURIComponent(payload.input)
                            axios
                                .get(get_url)
                                .then((response) => {
