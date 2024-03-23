@@ -1,18 +1,9 @@
 import React,{ useState } from 'react'
-import {createChatBotMessage,createClientMessage,createCustomMessage} from "react-chatbot-kit";
+import {createChatBotMessage} from "react-chatbot-kit";
 import axios from "axios";
 import {Mixpanel} from "../Lib/Mixpanel";
 import {AnalyticLogger} from "../Lib/AnalyticLogger";
 import {NativeAgent} from "../Lib/NativeAgent";
-
-const client = axios.create({
-    baseURL:  process.env.REACT_APP_API_URL
-});
-
-function isHTMLMessage(m){
-    let r = /<[a-z/][\s\S]*>/i.test(m);
-    return r;
-}
 
 function getDivinationPrompt(gua_text, input){
     return "你是一个只解释易经卦像的bot, 关连"+input+"为主题来解释以下易经卦像:"+JSON.stringify(gua_text)+""
@@ -26,8 +17,7 @@ const updateLastMessage = (props, message) => {
 
 async function postMessage(payload,gua,props){
     //console.log(gua)
-    let m_gua = "卦象: "+gua[0]+" "+gua[1]+ " "+gua[2]+ ", [卦辭]:"+gua[3][7]+" ", 
-    m_guaci = gua[3][7]+""
+    let m_gua = "卦象: "+gua[0]+" "+gua[1]+ " "+gua[2]+ ", [卦辭]:"+gua[3][7]+" "
     props.setState((prev) => ({
         ...prev,
         //messages: [...prev.messages, createChatBotMessage(m),createCustomMessage('test','rating',{payload:{"input":message,"response":m}},),],
@@ -40,7 +30,6 @@ async function postMessage(payload,gua,props){
     }));
     const atag = payload.atag
     const user_input = payload.input
-    let botMessage = "";
     const message = getDivinationPrompt(gua,user_input);
     Mixpanel.track("input",{"data":{message},atag});
     NativeAgent.setMessage({"data":{message},atag,"s":"input"})

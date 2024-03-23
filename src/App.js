@@ -237,6 +237,7 @@ function App() {
   );
 }
 
+console.log("欢迎诚心🙏看source code: https://github.com/jebberwocky/chatbx")
 console.log("running embedded:"+NativeAgent.isEmbedded())
 
 export default App;
