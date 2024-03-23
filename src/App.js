@@ -97,7 +97,6 @@ class ActionProvider {
     this.createCustomMessage = createCustomMessage;
   }
   handleMessage = (message) => {
-
     let botMessage = "",
         _chatconfig = {};
     Object.assign(_chatconfig,chatconfig);

@@ -25,7 +25,7 @@ const updateLastMessage = (props, message) => {
 };
 
 async function postMessage(payload,gua,props){
-    console.log(gua)
+    //console.log(gua)
     let m_gua = "卦象: "+gua[0]+" "+gua[1]+ " "+gua[2]+ ", [卦辭]:"+gua[3][7]+" ", 
     m_guaci = gua[3][7]+""
     props.setState((prev) => ({
@@ -46,7 +46,7 @@ async function postMessage(payload,gua,props){
     NativeAgent.setMessage({"data":{message},atag,"s":"input"})
     NativeAgent.toast("收到, 请稍等")
     //always use v4 for 解卦
-    const response = await fetch('http://colbt.cc:8661/beta/v4', {
+    const response = await fetch('http://colbt.cc:3301/stream/v4', {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json"
